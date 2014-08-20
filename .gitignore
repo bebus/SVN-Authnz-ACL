@@ -16,3 +16,6 @@ pod2htm*.tmp
 pm_to_blib
 SVN-Authnz-ACL-*
 SVN-Authnz-ACL-*.tar.gz
+.includepath
+t/test.pl
+t/acl_test.pl

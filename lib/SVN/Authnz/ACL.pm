@@ -1,8 +1,10 @@
 package SVN::Authnz::ACL;
 
-use 5.006;
-use strict;
-use warnings FATAL => 'all';
+use Moo;
+
+with 'SVN::Authnz::ACL::Role::Groups';
+with 'SVN::Authnz::ACL::Role::Aliases';
+with 'SVN::Authnz::ACL::Role::Resources';
 
 =head1 NAME
 
@@ -28,10 +30,13 @@ Perhaps a little code snippet.
     my $foo = SVN::Authnz::ACL->new();
     ...
 
-=head1 EXPORT
+=cut
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+has acl => (
+	is			=> 'ro',
+	required	=> 1
+
+);
 
 =head1 SUBROUTINES/METHODS
 
@@ -39,15 +44,30 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =cut
 
-sub function1 {
+sub load {
+	my ($self) = @_;
+	
+	
+	my $sCurrentResource;
+	if (open(my $hACL, "<", $self->acl)) {
+		while (my $line = <$hACL>) {
+			chomp $line;
+			
+			# check if this will be resource group or alias definition block
+			if ($line =~ /^\[\s*(.+?)\s*\]$/) {
+	            $sCurrentResource = $1;
+				print $self->$sCurrentResource if $sCurrentResource eq 'groups';
+	        }
+			
+			# case alias
+			
+			# case groups
+			
+			# case resources
+		}
+	}
 }
 
-=head2 function2
-
-=cut
-
-sub function2 {
-}
 
 =head1 AUTHOR
 
