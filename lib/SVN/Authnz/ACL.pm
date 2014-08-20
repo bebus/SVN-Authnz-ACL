@@ -52,18 +52,26 @@ sub load {
 	if (open(my $hACL, "<", $self->acl)) {
 		while (my $line = <$hACL>) {
 			chomp $line;
+			next if !$line or $line =~ /^\s*#/; #skip empty lines or comments
 			
 			# check if this will be resource group or alias definition block
 			if ($line =~ /^\[\s*(.+?)\s*\]$/) {
-	            $sCurrentResource = $1;
-				print $self->$sCurrentResource if $sCurrentResource eq 'groups';
+	            
+				# case alias
+				if ( lc $1 eq 'aliases' ) {
+					$sCurrentResource = $self->aliases;
+				}
+				# case groups
+				elsif ( lc $1 eq 'groups' ) {
+					$sCurrentResource = $self->groups;
+				}
+				# case resource
+				else {
+					$sCurrentResource = $self->resources;
+				}
+	        } else {
+	        	
 	        }
-			
-			# case alias
-			
-			# case groups
-			
-			# case resources
 		}
 	}
 }
