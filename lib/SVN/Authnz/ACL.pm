@@ -6,6 +6,7 @@ with 'SVN::Authnz::ACL::Role::Groups';
 with 'SVN::Authnz::ACL::Role::Aliases';
 with 'SVN::Authnz::ACL::Role::Resources';
 
+
 =head1 NAME
 
 SVN::Authnz::ACL - The great new SVN::Authnz::ACL!
@@ -51,28 +52,38 @@ sub load {
 	my $sCurrentResource;
 	if (open(my $hACL, "<", $self->acl)) {
 		while (my $line = <$hACL>) {
+			
 			chomp $line;
 			next if !$line or $line =~ /^\s*#/; #skip empty lines or comments
 			
 			# check if this will be resource group or alias definition block
 			if ($line =~ /^\[\s*(.+?)\s*\]$/) {
 	            
-				# case alias
+				# case of aliases block
 				if ( lc $1 eq 'aliases' ) {
-					$sCurrentResource = $self->aliases;
+					$sCurrentResource = 'alias';
 				}
-				# case groups
+				# case of groups block
 				elsif ( lc $1 eq 'groups' ) {
-					$sCurrentResource = $self->groups;
-				}
+					$sCurrentResource = 'group';
+				}				
 				# case resource
 				else {
-					$sCurrentResource = $self->resources;
+					$sCurrentResource = 'resource';
+					$self->addResource($1);
 				}
-	        } else {
+	        }
+	        
+	        # rest there are members / attributes of resoureces
+	        else {
+	        	my ($k, $v) = $line =~ /^(.+?)\s*=\s*(.*?)$/;	        	
 	        	
+	        	if ($sCurrentResource eq 'group') {
+	        		$self->addGroup($k);
+	        	}
 	        }
 		}
+		close $hACL;
 	}
 }
 
