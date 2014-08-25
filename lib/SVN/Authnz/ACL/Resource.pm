@@ -9,16 +9,30 @@ has section => (
 	}
 );
 
-has location => (
+has resource => (
 	is => "ro",
 	required => 1
 );
 
 has repository => (
-	is => "ro"
+	is => "ro",
+);
+
+has parent => (
+	is => "rw",
+	default => sub { undef }
+);
+
+has child => (
+	is => "rw"
 );
 
 has rules => ( is => 'ro', );
+
+has _storable => (
+	is => "rw",
+	default => sub { 1; }
+);
 
 around BUILDARGS => sub {
 	my $orig = shift;
@@ -48,6 +62,23 @@ sub equals {
 	else {
 		return 0;
 	}
+}
+
+around repository => sub {
+    my $orig = shift;
+    my $self = shift;
+    
+    if ( !defined $self->parent ) {
+    	return $self->parent->repository(@_);
+    } else {
+    	return $orig->($self, @_);
+    }
+};
+
+sub isTouched {
+	my $self = shift;
+	
+	1;
 }
 
 1;

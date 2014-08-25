@@ -78,8 +78,10 @@ sub load {
 	        else {
 	        	my ($k, $v) = $line =~ /^(.+?)\s*=\s*(.*?)$/;	        	
 	        	
-	        	if ($sCurrentResource eq 'group') {
+	        	if ( $sCurrentResource eq 'group' ) {
 	        		$self->addGroup($k);
+	        	} elsif ( $sCurrentResource eq 'resource' ) {
+	        		
 	        	}
 	        }
 		}
