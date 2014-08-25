@@ -48,10 +48,14 @@ has acl => (
 sub load {
 	my ($self) = @_;
 	
-	
+	my $i = 0;
 	my $sCurrentResource;
 	if (open(my $hACL, "<", $self->acl)) {
 		while (my $line = <$hACL>) {
+			
+			if (++$i % 1000 == 1) {
+				print $i . "\n";
+			}
 			
 			chomp $line;
 			next if !$line or $line =~ /^\s*#/; #skip empty lines or comments
@@ -81,7 +85,7 @@ sub load {
 	        	if ( $sCurrentResource eq 'group' ) {
 	        		$self->addGroup($k);
 	        	} elsif ( $sCurrentResource eq 'resource' ) {
-	        		
+	        		 
 	        	}
 	        }
 		}
