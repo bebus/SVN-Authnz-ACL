@@ -5,18 +5,12 @@ use SVN::Authnz::ACL::Repository;
 use SVN::Authnz::ACL::Resource;
 
 with 'SVN::Authnz::ACL::Role::Children';
+with 'SVN::Authnz::ACL::Role::AuthRules';
 
 has resource => (
 	is => "ro",
 	init_arg 	=> undef,
 	default => sub { '/' }
-);
-
-has rules => ( is => 'ro', );
-
-has _storable => (
-	is => "rw",
-	default => sub { 0; }
 );
 
 sub repo {

@@ -2,6 +2,7 @@ package SVN::Authnz::ACL::Resource;
 
 use Moo;
 with 'SVN::Authnz::ACL::Role::Children';
+with 'SVN::Authnz::ACL::Role::AuthRules';
 
 has resource => (
 	is => "ro",
@@ -12,13 +13,5 @@ has parent => (
 	is => "rw",
 	default => sub { undef }
 );
-
-has rules => ( is => 'ro', );
-
-has _storable => (
-	is => "rw",
-	default => sub { 0; }
-);
-
 
 1;

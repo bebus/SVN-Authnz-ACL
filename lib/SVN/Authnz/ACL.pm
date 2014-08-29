@@ -49,7 +49,8 @@ sub load {
 	my ($self) = @_;
 	
 	my $i = 0;
-	my $sCurrentResource;
+	my $sCurrentResourceName;
+	my $sCurrentObject;
 	if (open(my $hACL, "<", $self->acl)) {
 		while (my $line = <$hACL>) {
 			
@@ -65,16 +66,16 @@ sub load {
 	            
 				# case of aliases block
 				if ( lc $1 eq 'aliases' ) {
-					$sCurrentResource = 'alias';
+					$sCurrentResourceName = 'alias';
 				}
 				# case of groups block
 				elsif ( lc $1 eq 'groups' ) {
-					$sCurrentResource = 'group';
+					$sCurrentResourceName = 'group';
 				}				
 				# case resource
 				else {
-					$sCurrentResource = 'resource';
-					$self->addResource($1);
+					$sCurrentResourceName = 'resource';
+					$sCurrentObject = $self->addResource($1);
 				}
 	        }
 	        
@@ -82,10 +83,13 @@ sub load {
 	        else {
 	        	my ($k, $v) = $line =~ /^(.+?)\s*=\s*(.*?)$/;	        	
 	        	
-	        	if ( $sCurrentResource eq 'group' ) {
+	        	if ( $sCurrentResourceName eq 'group' ) {
 	        		$self->addGroup($k);
-	        	} elsif ( $sCurrentResource eq 'resource' ) {
-	        		 
+	        	} elsif ( $sCurrentResourceName eq 'resource' ) {
+	        		$k =~ s/^\@//;
+	        		if (my $oGroup = $self->existsGroup($k)) {
+	        			$sCurrentObject->authorize( $oGroup => $v );
+	        		}
 	        	}
 	        }
 		}
